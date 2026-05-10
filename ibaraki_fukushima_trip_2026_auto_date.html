@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>2026 家庭旅遊 - 茨城福島</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌸</text></svg>">
+  
+  <!-- 字體引入 -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#008080',   /* 炭治郎綠 */
+            secondary: '#F8D361', /* 善逸黃 */
+            bgbase: '#FDF5E6',    /* 米色 */
+            aux: '#C8E6C9',       /* 淡綠 */
+            accent: '#E32636',    /* 義勇紅 */
+          },
+          fontFamily: {
+            sans: ['"Noto Sans TC"', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- 自訂 CSS 與離線備用樣式 -->
+  <style>
+    :root {
+      --primary: #008080;
+      --secondary: #F8D361;
+      --bgbase: #FDF5E6;
+      --aux: #C8E6C9;
+      --accent: #E32636;
+    }
+    
+    body {
+      background-color: var(--bgbase);
+      background-image: url("data:image/svg+xml,%3Csvg width='150' height='150' viewBox='0 0 150 150' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='150' height='150' filter='url(%23noise)' opacity='0.06'/%3E%3C/svg%3E");
+      color: #333;
+      padding-top: 110px;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .header-fixed {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 50; background-color: var(--bgbase);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .tab-btn {
+      color: #666; border-bottom: 3px solid transparent; transition: all 0.2s; padding: 0.5rem 0.75rem;
+      white-space: nowrap; flex-shrink: 0;
+    }
+    .tab-btn.active {
+      color: var(--primary); border-bottom-color: var(--accent); font-weight: 700;
+    }
+
+    .day-pill {
+      background-color: white; color: var(--primary); border: 1px solid var(--primary); transition: all 0.2s;
+    }
+    .day-pill.active {
+      background-color: var(--primary); color: white; font-weight: bold;
+    }
+
+    .timeline-container { position: relative; padding-left: 2rem; margin-bottom: 1.25rem; }
+    .timeline-line {
+      position: absolute; left: 0.5rem; top: 0.5rem; bottom: -1rem; width: 3px; background-color: var(--aux); z-index: 0;
+    }
+    .timeline-container:last-child .timeline-line { display: none; }
+    .timeline-dot {
+      position: absolute; left: 0.15rem; top: 0.25rem; width: 14px; height: 14px; border-radius: 50%;
+      background-color: var(--primary); border: 3px solid var(--bgbase); z-index: 1;
+    }
+
+    .hidden-section { display: none; }
+    .hide-scrollbar::-webkit-scrollbar { display: none; }
+    .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    
+    .card { background: white; padding: 0.85rem; border-radius: 0.5rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05); border: 1px solid #f3f4f6; margin-top: 0.25rem; }
+    .text-note { font-size: 0.8rem; color: #6b7280; margin-top: 0.4rem; line-height: 1.4;}
+    
+    /* Google Map Button 樣式 */
+    .map-btn {
+      display: inline-flex; align-items: center; gap: 4px;
+      background-color: var(--primary); color: white;
+      font-size: 0.75rem; font-weight: 500;
+      padding: 0.35rem 0.75rem; border-radius: 9999px;
+      margin-top: 0.5rem; text-decoration: none;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.1); transition: transform 0.1s;
+    }
+    .map-btn:active { transform: scale(0.95); }
+    .map-btn svg { width: 12px; height: 12px; fill: currentColor; }
+
+    /* 景點圖片卡片 */
+    .attraction-card {
+      background: white; border-radius: 0.75rem; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 1rem; border: 1px solid #eee;
+    }
+    .attraction-img {
+      width: 100%; height: 180px; object-fit: cover; background-color: #e5e7eb;
+    }
+  </style>
+</head>
+<body class="antialiased">
+
+  <header class="header-fixed pb-1">
+    <div class="flex justify-between items-center px-4 py-3 bg-primary text-white shadow-md">
+      <h1 class="text-lg font-bold">🌸 2026 茨城福島家族遊</h1>
+    </div>
+    <div class="flex px-2 pt-2 bg-white/90 backdrop-blur-sm shadow-sm overflow-x-auto hide-scrollbar" style="gap: 1rem;">
+      <button class="tab-btn active text-sm font-medium" onclick="switchTab('tab-itinerary')">📍 行程</button>
+      <button class="tab-btn text-sm font-medium" onclick="switchTab('tab-attractions')">📸 景點</button>
+      <button class="tab-btn text-sm font-medium" onclick="switchTab('tab-accomm')">🏠 住宿</button>
+      <button class="tab-btn text-sm font-medium" onclick="switchTab('tab-transport')">🚗 交通</button>
+      <button class="tab-btn text-sm font-medium" onclick="switchTab('tab-food')">🍱 餐廳</button>
+    </div>
+  </header>
+
+  <main class="px-4 pb-12">
+
+    <!-- ==================== 分頁一：行程 ==================== -->
+    <section id="tab-itinerary" class="tab-content">
+      <!-- Day Pills -->
+      <div class="flex gap-2 mb-4 overflow-x-auto pb-2 hide-scrollbar">
+        <button class="day-pill active px-4 py-1.5 rounded-full text-sm shrink-0" onclick="switchDay('day-1')">Day 1 (6/27)</button>
+        <button class="day-pill px-4 py-1.5 rounded-full text-sm shrink-0" onclick="switchDay('day-2')">Day 2 (6/28)</button>
+        <button class="day-pill px-4 py-1.5 rounded-full text-sm shrink-0" onclick="switchDay('day-3')">Day 3 (6/29)</button>
+        <button class="day-pill px-4 py-1.5 rounded-full text-sm shrink-0" onclick="switchDay('day-4')">Day 4 (6/30)</button>
+        <button class="day-pill px-4 py-1.5 rounded-full text-sm shrink-0" onclick="switchDay('day-5')">Day 5 (7/1)</button>
+        <button class="day-pill px-4 py-1.5 rounded-full text-sm shrink-0" onclick="switchDay('day-6')">Day 6 (7/2)</button>
+        <button class="day-pill px-4 py-1.5 rounded-full text-sm shrink-0" onclick="switchDay('day-7')">Day 7 (7/3)</button>
+      </div>
+
+      <!-- Day 1 -->
+      <div id="day-1" class="day-content">
+        <h2 class="text-lg font-bold text-gray-800 mb-4 border-l-4 border-accent pl-2">台北 ➔ 神戶之夜</h2>
+        <div class="timeline-container"><div class="timeline-line"></div><div class="timeline-dot"></div>
+          <div class="text-sm text-gray-500 font-medium">06:55 ~ 10:55</div>
+          <div class="card"><div class="font-bold">高雄 ➔ 關西機場 IT284 <span class="auto-tag">航班</span></div></div>
+        </div>
+        <div class="timeline-container"><div class="timeline-line"></div><div class="timeline-dot"></div>
+          <div class="text-sm text-gray-500 font-medium">07:45 ~ 11:30</div>
+          <div class="card"><div class="font-bold">台北 ➔ 關西機場 IT710 <span class="auto-tag">航班</span></div></div>
+        </div>
+        <div class="timeline-container"><div class="timeline-line"></div><div class="timeline-dot"></div>
+          <div class="text-sm text-gray-500 font-medium">12:00 ~ 14:15</div>
+          <div class="card"><div class="font-bold">關西機場吃午餐 <span class="auto-tag">午餐</span></div></div>
+        </div>
+        <div class="timeline-container"><div class="timeline-line"></div><div class="timeline-dot"></div>
+          <div class="text-sm text-gray-500 font-medium">14:30 ~ 15:16</div>
+          <div class="card"><div class="font-bold">關西機場 ➔ 神戶機場 搭船 <span class="auto-tag">交通</span></div></div>
+        </div>
+        <div class="timeline-container"><div class="timeline-dot" style="background-color: var(--accent);"></div>
+          <div class="text-sm text-gray-500 font-medium">15:30</div>
+          <div class="card border-red-200 bg-red-50">
+            <div class="font-bold text-accent">🏠 住宿：神戶 Portopia 酒店 <span class="auto-tag">住宿</span></div>
+            <div class="text-note">預約代號: T45636DE9BC38、T4E8A9B036BCF</div>
+            <a href="https://www.google.com/maps/search/?api=1&query=神戸ポートピアホテル" target="_blank" class="map-btn"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg> Google Map</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Day 2 -->
+      <div id="day-2" class="day-content hidden-section">
+        <h2 class="text-lg font-bold text-gray-800 mb-4 border-l-4 border-accent pl-2">名園 ➔ 療癒綠色掃帚草</h2>
+        <div class="timeline-container"><div class="timeline-line"></div><div class="timeline-dot"></div>
+          <div class="text-sm text-gray-500 font-medium">06:06</div>
+          <div class="card"><div class="font-bold">Portliner 往機場 <span class="auto-tag">交通</span></div></div>
+        </div>
+        <div class="timeline-container"><div class="timeline-line"></div><div class="timeline-dot"></div>
+          <div class="text-sm text-gray-500 font-medium">08:10 ~ 09:20</div>
+          <div class="card"><div class="font-bold">神戶機場 ➔ 茨城機場 SKY182 <span class="auto-tag">航班</span></div></div>
+        </div>
+        <div class="timeline-container"><div class="timeline-line"></div><div class="timeline-dot"></div>
+          <div class="text-sm text-gray-500 font-medium">09:30 ~ 10:00</div>
+          <div class="card">
+            <div class="font-bold">機場取車 <span class="auto-tag">租車</span></div>
+            <div class="text-note">Toyota 租車 / 予約番号 98176045100</div>
+          </div>
+        </div>
+        <div class="timeline-container"><div class="timeline-line"></div><div class="timeline-dot"></div>
+          <div class="text-sm text-gray-500 font-medium">10:40 ~ 12:00</div>
+          <div class="card">
+            <div class="font-bold">午餐: iijima常陸牛本舗 <span class="auto-tag">午餐</span></div>
+            <a href="https://www.google.com/maps/search/?api=1&query=iijima常陸牛本舗" target="_blank" class="map-btn"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg> Google Map</a>
+          </div>
+        </div>
+        <div class="timeline-container"><div class="timeline-line"></div><div class="timeline-dot"></div>
+          <div class="text-sm text-gray-500 font-medium">12:00 ~ 13:30</div>
+          <div class="card">
+            <div class="font-bold">國營常陸海濱公園 <span class="auto-tag">景點</span></div>
+            <a href="https://www.google.com/maps/search/?api=1&query=国営ひたち海浜公園" target="_blank" class="map-btn"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg> Google Map</a>
+          </div>
+        </div>
+        <div class="timeline-container"><div class="timeline-line"></div><div class="timeline-dot"></div>
+          <div class="text-sm text-gray-500 font-medium">14:15 ~ 15:45</div>
+          <div class="card">
+            <div class="font-bold">偕樂園 <span class="auto-tag">景點</span></div>
+            <div class="mt-2 flex flex-wrap gap-2">
+              <a href="https://www.google.com/maps/search/?api=1&query=偕楽園" target="_blank" class="map-btn">📍 偕樂園</a>
+              <a href="https://www.google.com/maps/search/?api=1&query=常磐神社+駐車場" target="_blank" class="map-btn">🅿️ 常磐神社停車場</a>
+              <a href="https://www.google.com/maps/search/?api=1&query=桜山駐車場" target="_blank" class="map-btn">🅿️ 桜山駐車場</a>
+            </div>
+          </div>
+        </div>
+        <div class="timeline-container"><div class="timeline-line"></div><div class="timeline-dot"></div>
+          <div class="text-sm text-gray-500 font-medium">16:00 ~ 17:00</div>
+          <div class="card">
+            <div class="font-bold">千波湖 <span class="auto-tag">景點</span></div>
+            <a href="https://www.google.com/maps/search/?api=1&query=千波湖" target="_blank" class="map-btn"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg> Google Map</a>
+          </div>
+        </div>
+        <div class="timeline-container"><div class="timeline-line"></div><div class="timeline-dot"></div>
+          <div class="text-sm text-gray-500 font-medium">17:30 ~ 20:30</div>
+          <div class="card"><div class="font-bold">飯店晚餐 <span class="auto-tag">晚餐</span></div></div>
+        </div>
+        <div class="timeline-container"><div class="timeline-dot" style="background-color: var(--accent);"></div>
+          <div class="text-sm text-gray-500 font-medium">18:30</div>
+          <div class="card border-red-200 bg-red-50">
+            <div class="font-bold text-accent">🏠 住宿：大洗飯店 <span class="auto-tag">住宿</span></div>
+            <div class="text-note">預約代號: AA032033、AA032032</div>
+            <a href="https://www.google.com/maps/search/?api=1&query=大洗ホテル" target="_blank" class="map-btn"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg> Google Map</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Day 3 -->
+      <div id="day-3" class="day-content hidden-section">
+        <h2 class="text-lg font-bold text-gray-800 mb-4 border-l-4 border-accent pl-2">海洋、動物園與鮮甜魚市</h2>
+        <div class="timeline-container"><div class="timeline-line"></div><div class="timeline-dot"></div>
+          <div class="text-sm text-gray-500 font-medium">04:20</div>
+          <div class="card">
+            <div class="font-bold">大洗磯前神社 海上白色鳥居 <span class="auto-tag">景點</span></div>
+            <div class="text-note">日出時間 4:29</div>
+            <a href="https://www.google.com/maps/search/?api=1&query=大洗磯前神社+神磯の鳥居" target="_blank" class="map-btn">📍 Google Map</a>
+          </div>
+        </div>
+        <div class="timeline-container"><div class="timeline-line"></div><div class="timeline-dot"></div>
+          <div class="text-sm text-gray-500 font-medium">07:00 ~ 09:00</div>
+          <div class="card"><div class="font-bold">飯店早餐 <span class="auto-tag">早餐</span></div></div>
+        </div>
+        <div class="timeline-container"><div class="timeline-line"></div><div class="timeline-dot"></div>
+          <div class="text-sm text-gray-500 font-medium">09:00 ~ 11:30</div>
+          <div class="card">
+            <div class="font-bold">大洗水族館 <span class="auto-tag">景點</span></div>
+            <div class="text-note">9:00 開門，預計待 2.5 hrs</div>
+            <a href="https://www.google.com/maps/search/?api=1&query=アクアワールド茨城県大洗水族館" target="_blank" class="map-btn">📍 Google Map</a>
+          </div>
+        </div>
+        <div class="timeline-container"><div class="timeline-line"></div><div class="timeline-dot"></div>
+          <div class="text-sm text-gray-500 font-medium">11:30 ~ 13:00</div>
+          <div class="card">
+            <div class="font-bold">午餐：那珂湊魚市場 <span class="auto-tag">午餐</span></div>
+            <div class="text-note">享用現剖特大生蠔與豪華海鮮丼</div>
+            <a href="https://www.google.com/maps/search/?api=1&query=那珂湊おさかな市場" target="_blank" class="map-btn">📍 Google Map</a>
+          </div>
+        </div>
+        <div class="timeline-container"><div class="timeline-line"></div><div class="timeline-dot"></div>
+          <div class="text-sm text-gray-500 font-medium">13:10 ~ 13:30</div>
+          <div class="card">
+            <div class="font-bold">地瓜乾神社 (拍金色鳥居) <span class="auto-tag">景點</span></div>
+            <a href="https://www.google.com/maps/search/?api=1&query=ほしいも神社" target="_blank" class="map-btn">📍 Google Map</a>
+          </div>
+        </div>
+        <div class="timeline-container"><div class="timeline-line"></div><div class="timeline-dot"></div>
+          <div class="text-sm text-gray-500 font-medium">14:00 ~ 16:00</div>
+          <div class="card">
+            <div class="font-bold">日立市かみね動物園 <span class="auto-tag">景點</span></div>
+            <a href="https://www.google.com/maps/search/?api=1&query=日立市かみね動物園" target="_blank" class="map-btn">📍 Google Map</a>
+          </div>
+        </div>
+        <div class="timeline-container"><div class="timeline-line"></div><div class="timeline-dot"></div>
+          <div class="text-sm text-gray-500 font-medium">18:00</div>
+          <div class="card">
+            <div class="font-bold">晚餐: つけめんTETSU 壱の木戸水戸店 <span class="auto-tag">晚餐</span></div>
+            <div class="text-note">水戶駅ビル エクセルみなみ 4F</div>
+            <a href="https://www.google.com/maps/search/?api=1&query=つけめんTETSU+壱の木戸水戸店" target="_blank" class="map-btn">📍 Google Map</a>
+          </div>
+        </div>
+        <div class="timeline-container"><div class="timeline-dot" style="background-color: var(--accent);"></div>
+          <div class="text-sm text-gray-500 font-medium">20:00</div>
+          <div class="card border-red-200 bg-red-50">
+            <div class="font-bold text-accent">🏠 住宿：一戶貸 <span class="auto-tag">住宿</span></div>
+            <a href="https://www.google.com/maps/search/?api=1&query=茨城県水戸市金町1-2-55" target="_blank" class="map-btn">📍 Google Map</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Day 4 -->
+      <div id="day-4" class="day-content hidden-section">
+        <h2 class="text-lg font-bold text-gray-800 mb-4 border-l-4 border-accent pl-2">飛瀑震懾 ➔ 鬥雞料理 ➔ 郡山</h2>
+        <div class="timeline-container"><div class="timeline-line"></div><div class="timeline-dot"></div>
+          <div class="text-sm text-gray-500 font-medium">07:50</div>
+          <div class="card"><div class="font-bold">早餐: 便利商店 <span class="auto-tag">早餐</span></div></div>
+        </div>
+        <div class="timeline-container"><div class="timeline-line"></div><div class="timeline-dot"></div>
+          <div class="text-sm text-gray-500 font-medium">09:00 ~ 10:40</div>
+          <div class="card">
+            <div class="font-bold">袋田瀑布 <span class="auto-tag">景點</span></div>
+            <div class="text-note">門票 $500 ｜ 豊年万作蘋果派｜開車1小時</div>
+            <a href="https://www.google.com/maps/search/?api=1&query=袋田の滝" target="_blank" class="map-btn">📍 Google Map</a>
+          </div>
+        </div>
+        <div class="timeline-container"><div class="timeline-line"></div><div class="timeline-dot"></div>
+          <div class="text-sm text-gray-500 font-medium">10:55 ~ 12:00</div>
+          <div class="card">
+            <div class="font-bold">午餐：彌滿喜 (Yamaki) <span class="auto-tag">午餐</span></div>
+            <div class="text-note">大子町老店，享用特產「奧久慈鬥雞」料理</div>
+            <a href="https://www.google.com/maps/search/?api=1&query=弥満喜" target="_blank" class="map-btn">📍 Google Map</a>
+          </div>
+        </div>
+        <div class="timeline-container"><div class="timeline-line"></div><div class="timeline-dot"></div>
+          <div class="text-sm text-gray-500 font-medium">12:15 ~ 13:00</div>
+          <div class="card">
+            <div class="font-bold">月待瀑布 <span class="auto-tag">景點</span></div>
+            <div class="text-note">15min 車程</div>
+            <a href="https://www.google.com/maps/search/?api=1&query=月待の滝" target="_blank" class="map-btn">📍 Google Map</a>
+          </div>
+        </div>
+        <div class="timeline-container"><div class="timeline-line"></div><div class="timeline-dot"></div>
+          <div class="text-sm text-gray-500 font-medium">14:45</div>
+          <div class="card"><div class="font-bold">水戶車站還車 <span class="auto-tag">交通</span></div></div>
+        </div>
+        <div class="timeline-container"><div class="timeline-line"></div><div class="timeline-dot"></div>
+          <div class="text-sm text-gray-500 font-medium">15:15</div>
+          <div class="card bg-blue-50 border-blue-100">
+            <div class="font-bold text-blue-800">JR 水郡線 前往郡山市 <span class="auto-tag">交通</span></div>
+            <ul class="text-note list-disc pl-4 mt-1">
+              <li>首選 (337D直達)：15:15 水戶發 ➔ 18:30 抵郡山</li>
+              <li>備選 (833D轉車)：16:17 水戶發 ➔ 19:53 抵郡山</li>
+            </ul>
+          </div>
+        </div>
+        <div class="timeline-container"><div class="timeline-line"></div><div class="timeline-dot"></div>
+          <div class="text-sm text-gray-500 font-medium">晚上</div>
+          <div class="card">
+            <div class="font-bold">晚餐: まぜそば専門店 凜々亭 郡山本店 <span class="auto-tag">晚餐</span></div>
+            <a href="https://www.google.com/maps/search/?api=1&query=まぜそば専門店+凜々亭+郡山本店" target="_blank" class="map-btn">📍 Google Map</a>
+          </div>
+        </div>
+        <div class="timeline-container"><div class="timeline-dot" style="background-color: var(--accent);"></div>
+          <div class="text-sm text-gray-500 font-medium">18:45</div>
+          <div class="card border-red-200 bg-red-50">
+            <div class="font-bold text-accent">🏠 住宿：Dormy Inn EXPRESS 郡山 <span class="auto-tag">住宿</span></div>
+            <div class="text-note">可享受宵夜蕎麥麵</div>
+            <a href="https://www.google.com/maps/search/?api=1&query=ドーミーインEXPRESS郡山" target="_blank" class="map-btn">📍 Google Map</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Day 5 -->
+      <div id="day-5" class="day-content hidden-section">
+        <h2 class="text-lg font-bold text-gray-800 mb-4 border-l-4 border-accent pl-2">天鏡湖 ➔ 木造迷宮 ➔ 星野</h2>
+        <div class="timeline-container"><div class="timeline-line"></div><div class="timeline-dot"></div>
+          <div class="text-sm text-gray-500 font-medium">09:00</div>
+          <div class="card">
+            <div class="font-bold">郡山站租車 <span class="auto-tag">租車</span></div>
+            <div class="text-note">預約 Toyota 租車 予約番号 98176046300</div>
+            <a href="https://www.google.com/maps/search/?api=1&query=トヨタレンタカー+郡山駅新幹線口店" target="_blank" class="map-btn">📍 Google Map</a>
+          </div>
+        </div>
+        <div class="timeline-container"><div class="timeline-line"></div><div class="timeline-dot"></div>
+          <div class="text-sm text-gray-500 font-medium">09:10 ~ 09:30</div>
+          <div class="card">
+            <div class="font-bold">吉利蛋公園 <span class="auto-tag">景點</span></div>
+            <a href="https://www.google.com/maps/search/?api=1&query=ラッキー公園+in+こおりやま市" target="_blank" class="map-btn">📍 Google Map</a>
+          </div>
+        </div>
+        <div class="timeline-container"><div class="timeline-line"></div><div class="timeline-dot"></div>
+          <div class="text-sm text-gray-500 font-medium">09:50 ~ 10:30</div>
+          <div class="card">
+            <div class="font-bold">天神濱 <span class="auto-tag">景點</span></div>
+            <a href="https://www.google.com/maps/search/?api=1&query=天神浜" target="_blank" class="map-btn">📍 Google Map</a>
+          </div>
+        </div>
+        <div class="timeline-container"><div class="timeline-line"></div><div class="timeline-dot"></div>
+          <div class="text-sm text-gray-500 font-medium">10:45 ~ 11:30</div>
+          <div class="card">
+            <div class="font-bold">長濱(天鵝船) <span class="auto-tag">景點</span></div>
+            <a href="https://www.google.com/maps/search/?api=1&query=猪苗代湖+長浜" target="_blank" class="map-btn">📍 Google Map</a>
+          </div>
+        </div>
+        <div class="timeline-container"><div class="timeline-line"></div><div class="timeline-dot"></div>
+          <div class="text-sm text-gray-500 font-medium">12:00 ~ 13:30</div>
+          <div class="card">
+            <div class="font-bold">午餐：Murai醬汁豬排 (むらい) 或 河京拉麵館 <span class="auto-tag">午餐</span></div>
+            <div class="mt-2 flex flex-wrap gap-2">
+              <a href="https://www.google.com/maps/search/?api=1&query=むらい+会津若松" target="_blank" class="map-btn">📍 豬排</a>
+              <a href="https://www.google.com/maps/search/?api=1&query=河京ラーメン館" target="_blank" class="map-btn">📍 拉麵</a>
+            </div>
+          </div>
+        </div>
+        <div class="timeline-container"><div class="timeline-line"></div><div class="timeline-dot"></div>
+          <div class="text-sm text-gray-500 font-medium">13:45 ~ 15:00</div>
+          <div class="card">
+            <div class="font-bold">榮螺堂 (Sazaedo) <span class="auto-tag">景點</span></div>
+            <a href="https://www.google.com/maps/search/?api=1&query=会津さざえ堂" target="_blank" class="map-btn">📍 Google Map</a>
+          </div>
+        </div>
+        <div class="timeline-container"><div class="timeline-line"></div><div class="timeline-dot"></div>
+          <div class="text-sm text-gray-500 font-medium">15:15 ~ 17:00</div>
+          <div class="card">
+            <div class="font-bold">會津若松城 (鶴ヶ城) <span class="auto-tag">景點</span></div>
+            <a href="https://www.google.com/maps/search/?api=1&query=鶴ヶ城" target="_blank" class="map-btn">📍 Google Map</a>
+          </div>
+        </div>
+        <div class="timeline-container"><div class="timeline-line"></div><div class="timeline-dot"></div>
+          <div class="text-sm text-gray-500 font-medium">18:30</div>
+          <div class="card"><div class="font-bold">飯店晚餐 <span class="auto-tag">晚餐</span></div></div>
+        </div>
+        <div class="timeline-container"><div class="timeline-dot" style="background-color: var(--accent);"></div>
+          <div class="text-sm text-gray-500 font-medium">18:00</div>
+          <div class="card border-red-200 bg-red-50">
+            <div class="font-bold text-accent">🏠 住宿：磐梯山溫泉飯店 by 星野集團 <span class="auto-tag">住宿</span></div>
+            <a href="https://www.google.com/maps/search/?api=1&query=星野リゾート磐梯山温泉ホテル" target="_blank" class="map-btn">📍 Google Map</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Day 6 -->
+      <div id="day-6" class="day-content hidden-section">
+        <h2 class="text-lg font-bold text-gray-800 mb-4 border-l-4 border-accent pl-2">神秘五色沼 ➔ 江戶古道</h2>
+        <div class="timeline-container"><div class="timeline-line"></div><div class="timeline-dot"></div>
+          <div class="text-sm text-gray-500 font-medium">07:45</div>
+          <div class="card"><div class="font-bold">飯店早餐 <span class="auto-tag">早餐</span></div></div>
+        </div>
+        <div class="timeline-container"><div class="timeline-line"></div><div class="timeline-dot"></div>
+          <div class="text-sm text-gray-500 font-medium">08:30</div>
+          <div class="card">
+            <div class="font-bold">出發前往五色沼 <span class="auto-tag">交通</span></div>
+            <a href="https://www.google.com/maps/search/?api=1&query=五色沼" target="_blank" class="map-btn">📍 Google Map</a>
+          </div>
+        </div>
+        <div class="timeline-container"><div class="timeline-line"></div><div class="timeline-dot"></div>
+          <div class="text-sm text-gray-500 font-medium">09:00 ~ 10:30</div>
+          <div class="card">
+            <div class="font-bold">五色沼 健行 <span class="auto-tag">景點</span></div>
+            <div class="text-note">沿「五色沼探勝路」健行約 1.5 小時 (裏磐梯物産館~青沼~弁天沼)</div>
+            <a href="https://www.google.com/maps/search/?api=1&query=五色沼湖沼群" target="_blank" class="map-btn">📍 Google Map</a>
+          </div>
+        </div>
+        <div class="timeline-container"><div class="timeline-line"></div><div class="timeline-dot"></div>
+          <div class="text-sm text-gray-500 font-medium">12:00 ~ 13:30</div>
+          <div class="card">
+            <div class="font-bold">大內宿 茅葺屋聚落 <span class="auto-tag">景點</span></div>
+            <a href="https://www.google.com/maps/search/?api=1&query=大内宿" target="_blank" class="map-btn">📍 Google Map</a>
+          </div>
+        </div>
+        <div class="timeline-container"><div class="timeline-line"></div><div class="timeline-dot"></div>
+          <div class="text-sm text-gray-500 font-medium">13:45</div>
+          <div class="card">
+            <div class="font-bold">午餐: Hetsuri Garden <span class="auto-tag">午餐</span></div>
+            <a href="https://www.google.com/maps/search/?api=1&query=へつりガーデン" target="_blank" class="map-btn">📍 Google Map</a>
+          </div>
+        </div>
+        <div class="timeline-container"><div class="timeline-line"></div><div class="timeline-dot"></div>
+          <div class="text-sm text-gray-500 font-medium">14:15 ~ 15:15</div>
+          <div class="card">
+            <div class="font-bold">參觀奇岩絕景【塔崖】(塔のへつり) <span class="auto-tag">景點</span></div>
+            <a href="https://www.google.com/maps/search/?api=1&query=塔のへつり" target="_blank" class="map-btn">📍 Google Map</a>
+          </div>
+        </div>
+        <div class="timeline-container"><div class="timeline-line"></div><div class="timeline-dot"></div>
+          <div class="text-sm text-gray-500 font-medium">19:30</div>
+          <div class="card"><div class="font-bold">飯店晚餐 <span class="auto-tag">晚餐</span></div></div>
+        </div>
+        <div class="timeline-container"><div class="timeline-dot" style="background-color: var(--accent);"></div>
+          <div class="text-sm text-gray-500 font-medium">17:00</div>
+          <div class="card border-red-200 bg-red-50">
+            <div class="font-bold text-accent">🏠 住宿：蘆之牧溫泉 大川莊 <span class="auto-tag">住宿</span></div>
+            <div class="text-note">16:00~18:00 可欣賞浮舞台三味線演奏</div>
+            <a href="https://www.google.com/maps/search/?api=1&query=芦ノ牧温泉大川荘" target="_blank" class="map-btn">📍 Google Map</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Day 7 -->
+      <div id="day-7" class="day-content hidden-section">
+        <h2 class="text-lg font-bold text-gray-800 mb-4 border-l-4 border-accent pl-2">悠閒返程 ➔ 福島機場</h2>
+        <div class="timeline-container"><div class="timeline-line"></div><div class="timeline-dot"></div>
+          <div class="text-sm text-gray-500 font-medium">07:00 ~ 09:00</div>
+          <div class="card"><div class="font-bold">飯店早餐 <span class="auto-tag">早餐</span></div></div>
+        </div>
+        <div class="timeline-container"><div class="timeline-line"></div><div class="timeline-dot"></div>
+          <div class="text-sm text-gray-500 font-medium">早上</div>
+          <div class="card">
+            <div class="font-bold">飯店內悠閒泡湯、採買福島特產 <span class="auto-tag">景點</span></div>
+          </div>
+        </div>
+        <div class="timeline-container"><div class="timeline-line"></div><div class="timeline-dot"></div>
+          <div class="text-sm text-gray-500 font-medium">下午</div>
+          <div class="card">
+            <div class="font-bold">驅車前往福島機場 <span class="auto-tag">交通</span></div>
+            <div class="text-note">預計車程約 1 小時 15 分鐘</div>
+          </div>
+        </div>
+        <div class="timeline-container"><div class="timeline-line"></div><div class="timeline-dot"></div>
+          <div class="text-sm text-gray-500 font-medium">14:00</div>
+          <div class="card">
+            <div class="font-bold">機場還車 <span class="auto-tag">租車</span></div>
+            <a href="https://www.google.com/maps/search/?api=1&query=トヨタレンタカー+福島空港店" target="_blank" class="map-btn">📍 Google Map</a>
+          </div>
+        </div>
+        <div class="timeline-container"><div class="timeline-dot"></div>
+          <div class="text-sm text-gray-500 font-medium">16:00 ~ 19:10</div>
+          <div class="card border-blue-200 bg-blue-50">
+            <div class="font-bold text-blue-800">✈️ 返回台北 IT753 <span class="auto-tag">航班</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 分頁：景點 (Attractions) 全收錄 ==================== -->
+    <section id="tab-attractions" class="tab-content hidden-section">
+      <h2 class="text-xl font-bold text-primary mb-4">📸 行程景點總覽</h2>
+      
+      <div class="bg-yellow-50 border-l-4 border-secondary p-3 rounded text-sm text-gray-700 mb-4 shadow-sm">
+        💡 <b>小提示：</b>目前的照片使用免費圖庫連結預覽。若要確保完全離線使用，建議將這些圖片下載至手機，或放在與此 HTML 相同的資料夾中，並將語法改為 <code>&lt;img src="檔名.jpg"&gt;</code>。
+      </div>
+
+      <div class="attraction-card">
+        <img src="C:\Users\exe2x\Desktop\ibaraki\國營常陸海濱公園.jpg" alt="國營常陸海濱公園" class="attraction-img">
+        <div class="p-4">
+          <div class="flex justify-between items-start">
+            <h3 class="font-bold text-lg text-gray-800">國營常陸海濱公園</h3>
+            <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded font-bold">6/28</span>
+          </div>
+          <p class="text-sm text-gray-600 mt-1">欣賞療癒的綠色掃帚草花海與自然風光。</p>
+          <a href="https://www.google.com/maps/search/?api=1&query=国営ひたち海浜公園" target="_blank" class="map-btn mt-3">📍 前往 Google Map</a>
+        </div>
+      </div>
+
+      <div class="attraction-card">
+        <img src="C:\Users\exe2x\Desktop\ibaraki\偕樂園.jpg" alt="偕樂園" class="attraction-img">
+        <div class="p-4">
+          <div class="flex justify-between items-start">
+            <h3 class="font-bold text-lg text-gray-800">偕樂園</h3>
+            <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded font-bold">6/28</span>
+          </div>
+          <p class="text-sm text-gray-600 mt-1">日本三大名園之一，優美的日式庭園景色。</p>
+          <a href="https://www.google.com/maps/search/?api=1&query=偕楽園" target="_blank" class="map-btn mt-3">📍 前往 Google Map</a>
+        </div>
+      </div>
+
+      <div class="attraction-card">
+        <img src="C:\Users\exe2x\Desktop\ibaraki\千波湖.jpg" alt="千波湖" class="attraction-img">
+        <div class="p-4">
+          <div class="flex justify-between items-start">
+            <h3 class="font-bold text-lg text-gray-800">千波湖</h3>
+            <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded font-bold">6/28</span>
+          </div>
+          <p class="text-sm text-gray-600 mt-1">水戶市民的綠洲，湖畔風景優美適合散步。</p>
+          <a href="https://www.google.com/maps/search/?api=1&query=千波湖" target="_blank" class="map-btn mt-3">📍 前往 Google Map</a>
+        </div>
+      </div>
+
+      <div class="attraction-card">
+        <img src="C:\Users\exe2x\Desktop\ibaraki\大洗磯前神社.jpg" alt="大洗磯前神社" class="attraction-img">
+        <div class="p-4">
+          <div class="flex justify-between items-start">
+            <h3 class="font-bold text-lg text-gray-800">大洗磯前神社 海上鳥居</h3>
+            <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded font-bold">6/29</span>
+          </div>
+          <p class="text-sm text-gray-600 mt-1">矗立於太平洋波濤中的神磯鳥居，絕佳日出拍攝地。</p>
+          <a href="https://www.google.com/maps/search/?api=1&query=大洗磯前神社+神磯の鳥居" target="_blank" class="map-btn mt-3">📍 前往 Google Map</a>
+        </div>
+      </div>
+
+      <div class="attraction-card">
+        <img src="C:\Users\exe2x\Desktop\ibaraki\大洗水族館.jpg" alt="大洗水族館" class="attraction-img">
+        <div class="p-4">
+          <div class="flex justify-between items-start">
+            <h3 class="font-bold text-lg text-gray-800">大洗水族館</h3>
+            <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded font-bold">6/29</span>
+          </div>
+          <p class="text-sm text-gray-600 mt-1">日本頂級的海洋世界，鯊魚種類數量為全日本第一。</p>
+          <a href="https://www.google.com/maps/search/?api=1&query=アクアワールド茨城県大洗水族館" target="_blank" class="map-btn mt-3">📍 前往 Google Map</a>
+        </div>
+      </div>
+      
+      <div class="attraction-card">
+        <img src="C:\Users\exe2x\Desktop\ibaraki\地瓜乾神社.jpg" alt="地瓜乾神社" class="attraction-img">
+        <div class="p-4">
+          <div class="flex justify-between items-start">
+            <h3 class="font-bold text-lg text-gray-800">地瓜乾神社 (ほしいも神社)</h3>
+            <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded font-bold">6/29</span>
+          </div>
+          <p class="text-sm text-gray-600 mt-1">造型獨特的金色鳥居，祈求「想要的東西都能得到」。</p>
+          <a href="https://www.google.com/maps/search/?api=1&query=ほしいも神社" target="_blank" class="map-btn mt-3">📍 前往 Google Map</a>
+        </div>
+      </div>
+
+      <div class="attraction-card">
+        <img src="C:\Users\exe2x\Desktop\ibaraki\日立市かみね動物園.jpg" alt="日立市かみね動物園" class="attraction-img">
+        <div class="p-4">
+          <div class="flex justify-between items-start">
+            <h3 class="font-bold text-lg text-gray-800">日立市かみね動物園</h3>
+            <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded font-bold">6/29</span>
+          </div>
+          <p class="text-sm text-gray-600 mt-1">位於山丘上的動物園，可以一邊觀賞動物一邊眺望太平洋。</p>
+          <a href="https://www.google.com/maps/search/?api=1&query=日立市かみね動物園" target="_blank" class="map-btn mt-3">📍 前往 Google Map</a>
+        </div>
+      </div>
+
+      <div class="attraction-card">
+        <img src="C:\Users\exe2x\Desktop\ibaraki\袋田瀑布.jpg" alt="袋田瀑布" class="attraction-img">
+        <div class="p-4">
+          <div class="flex justify-between items-start">
+            <h3 class="font-bold text-lg text-gray-800">袋田瀑布</h3>
+            <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded font-bold">6/30</span>
+          </div>
+          <p class="text-sm text-gray-600 mt-1">日本三大名瀑之一，四段式傾瀉而下的壯麗水流。</p>
+          <a href="C:\Users\exe2x\Desktop\ibaraki\" target="_blank" class="map-btn mt-3">📍 前往 Google Map</a>
+        </div>
+      </div>
+
+      <div class="attraction-card">
+        <img src="C:\Users\exe2x\Desktop\ibaraki\月待瀑布.jpg" alt="月待瀑布" class="attraction-img">
+        <div class="p-4">
+          <div class="flex justify-between items-start">
+            <h3 class="font-bold text-lg text-gray-800">月待瀑布</h3>
+            <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded font-bold">6/30</span>
+          </div>
+          <p class="text-sm text-gray-600 mt-1">可以走到瀑布背面欣賞的「裏見瀑布」。</p>
+          <a href="https://www.google.com/maps/search/?api=1&query=月待の滝" target="_blank" class="map-btn mt-3">📍 前往 Google Map</a>
+        </div>
+      </div>
+
+      <div class="attraction-card">
+        <img src="C:\Users\exe2x\Desktop\ibaraki\ラッキー公園.jpg" alt="吉利蛋公園" class="attraction-img">
+        <div class="p-4">
+          <div class="flex justify-between items-start">
+            <h3 class="font-bold text-lg text-gray-800">吉利蛋公園 (ラッキー公園)</h3>
+            <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded font-bold">7/1</span>
+          </div>
+          <p class="text-sm text-gray-600 mt-1">以寶可夢「吉利蛋」為主題打造的可愛主題公園。</p>
+          <a href="https://www.google.com/maps/search/?api=1&query=ラッキー公園+in+こおりやま市" target="_blank" class="map-btn mt-3">📍 前往 Google Map</a>
+        </div>
+      </div>
+
+      <div class="attraction-card">
+        <img src="C:\Users\exe2x\Desktop\ibaraki\長濱.jpg" alt="天神濱 & 長濱" class="attraction-img">
+        <div class="p-4">
+          <div class="flex justify-between items-start">
+            <h3 class="font-bold text-lg text-gray-800">豬苗代湖 天神濱 & 長濱</h3>
+            <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded font-bold">7/1</span>
+          </div>
+          <p class="text-sm text-gray-600 mt-1">被稱為「天鏡湖」的絕美湖泊，可搭乘天鵝船遊湖。</p>
+          <a href="https://www.google.com/maps/search/?api=1&query=天神浜" target="_blank" class="map-btn mt-3">📍 前往 Google Map</a>
+        </div>
+      </div>
+
+      <div class="attraction-card">
+        <img src="C:\Users\exe2x\Desktop\ibaraki\榮螺堂.jpg" alt="榮螺堂" class="attraction-img">
+        <div class="p-4">
+          <div class="flex justify-between items-start">
+            <h3 class="font-bold text-lg text-gray-800">會津榮螺堂 (Sazaedo)</h3>
+            <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded font-bold">7/1</span>
+          </div>
+          <p class="text-sm text-gray-600 mt-1">世界唯一的神奇木造雙螺旋結構建築。</p>
+          <a href="https://www.google.com/maps/search/?api=1&query=会津さざえ堂" target="_blank" class="map-btn mt-3">📍 前往 Google Map</a>
+        </div>
+      </div>
+
+      <div class="attraction-card">
+        <img src="C:\Users\exe2x\Desktop\ibaraki\會津若松城.jpg" alt="會津若松城" class="attraction-img">
+        <div class="p-4">
+          <div class="flex justify-between items-start">
+            <h3 class="font-bold text-lg text-gray-800">會津若松城 (鶴ヶ城)</h3>
+            <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded font-bold">7/1</span>
+          </div>
+          <p class="text-sm text-gray-600 mt-1">日本唯一紅瓦天守閣的名城，充滿歷史故事的百大名城。</p>
+          <a href="https://www.google.com/maps/search/?api=1&query=鶴ヶ城" target="_blank" class="map-btn mt-3">📍 前往 Google Map</a>
+        </div>
+      </div>
+
+      <div class="attraction-card">
+        <img src="C:\Users\exe2x\Desktop\ibaraki\五色沼.jpg" alt="五色沼" class="attraction-img">
+        <div class="p-4">
+          <div class="flex justify-between items-start">
+            <h3 class="font-bold text-lg text-gray-800">五色沼</h3>
+            <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded font-bold">7/2</span>
+          </div>
+          <p class="text-sm text-gray-600 mt-1">隨天氣與光線變換色彩的神秘湖沼群，沿探勝路悠閒健行。</p>
+          <a href="https://www.google.com/maps/search/?api=1&query=五色沼湖沼群" target="_blank" class="map-btn mt-3">📍 前往 Google Map</a>
+        </div>
+      </div>
+
+      <div class="attraction-card">
+        <img src="C:\Users\exe2x\Desktop\ibaraki\大內宿.jpg" alt="大內宿" class="attraction-img">
+        <div class="p-4">
+          <div class="flex justify-between items-start">
+            <h3 class="font-bold text-lg text-gray-800">大內宿</h3>
+            <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded font-bold">7/2</span>
+          </div>
+          <p class="text-sm text-gray-600 mt-1">江戶時代宿場町，保留古色古香的茅葺屋建築群。</p>
+          <a href="https://www.google.com/maps/search/?api=1&query=大内宿" target="_blank" class="map-btn mt-3">📍 前往 Google Map</a>
+        </div>
+      </div>
+
+      <div class="attraction-card">
+        <img src="C:\Users\exe2x\Desktop\ibaraki\塔崖.jpg" alt="塔崖" class="attraction-img">
+        <div class="p-4">
+          <div class="flex justify-between items-start">
+            <h3 class="font-bold text-lg text-gray-800">塔崖 (塔のへつり)</h3>
+            <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded font-bold">7/2</span>
+          </div>
+          <p class="text-sm text-gray-600 mt-1">經過百萬年侵蝕形成的奇岩絕景，被指定為國家天然紀念物。</p>
+          <a href="https://www.google.com/maps/search/?api=1&query=塔のへつり" target="_blank" class="map-btn mt-3">📍 前往 Google Map</a>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ==================== 分頁二：住宿 ==================== -->
+    <section id="tab-accomm" class="tab-content hidden-section">
+      <h2 class="text-xl font-bold text-primary mb-4">🏠 住宿總覽</h2>
+      
+      <div class="card border-l-4 border-primary mb-4">
+        <h3 class="font-bold text-lg">6/27 神戶 Portopia 酒店</h3>
+        <p class="text-sm text-gray-600 mt-1">代號：T45636DE9BC38, T4E8A9B036BCF</p>
+        <p class="text-xs text-gray-500 mb-2">地址: 6 Chome-10-1 Minatojima Nakamachi, Chuo Ward, Kobe</p>
+        <a href="https://www.google.com/maps/search/?api=1&query=神戸ポートピアホテル" target="_blank" class="map-btn">📍 Google Map</a>
+      </div>
+      
+      <div class="card border-l-4 border-primary mb-4">
+        <h3 class="font-bold text-lg">6/28 大洗ホテル</h3>
+        <p class="text-sm text-gray-600 mt-1">代號：AA032033, AA032032</p>
+        <p class="text-xs text-gray-500 mb-2">地址: 茨城県東茨城郡大洗町磯浜町6881</p>
+        <a href="https://www.google.com/maps/search/?api=1&query=大洗ホテル" target="_blank" class="map-btn">📍 Google Map</a>
+      </div>
+      
+      <div class="card border-l-4 border-primary mb-4">
+        <h3 class="font-bold text-lg">6/29 一戶貸 (水戶)</h3>
+        <p class="text-xs text-gray-500 mb-2">地址：茨城県水戸市金町1-2-55</p>
+        <a href="https://www.google.com/maps/search/?api=1&query=茨城県水戸市金町1-2-55" target="_blank" class="map-btn">📍 Google Map</a>
+      </div>
+      
+      <div class="card border-l-4 border-primary mb-4">
+        <h3 class="font-bold text-lg">6/30 Dormy Inn EXPRESS 郡山</h3>
+        <a href="https://www.google.com/maps/search/?api=1&query=ドーミーインEXPRESS郡山" target="_blank" class="map-btn">📍 Google Map</a>
+      </div>
+      
+      <div class="card border-l-4 border-primary mb-4">
+        <h3 class="font-bold text-lg">7/1 磐梯山溫泉飯店 by 星野集團</h3>
+        <a href="https://www.google.com/maps/search/?api=1&query=星野リゾート磐梯山温泉ホテル" target="_blank" class="map-btn">📍 Google Map</a>
+      </div>
+      
+      <div class="card border-l-4 border-primary mb-4">
+        <h3 class="font-bold text-lg">7/2 芦ノ牧温泉 大川荘</h3>
+        <a href="https://www.google.com/maps/search/?api=1&query=芦ノ牧温泉大川荘" target="_blank" class="map-btn">📍 Google Map</a>
+      </div>
+    </section>
+
+    <!-- ==================== 分頁三：交通 ==================== -->
+    <section id="tab-transport" class="tab-content hidden-section">
+      <h2 class="text-xl font-bold text-primary mb-4">✈️ 航班總覽</h2>
+      <div class="card mb-6 text-sm">
+        <div class="flex justify-between border-b pb-2 mb-2"><span class="font-bold">去程 (高雄)</span><span>IT284 (06:55~10:55)</span></div>
+        <div class="flex justify-between border-b pb-2 mb-2"><span class="font-bold">去程 (台北)</span><span>IT710 (07:45~11:30)</span></div>
+        <div class="flex justify-between border-b pb-2 mb-2"><span class="font-bold">國內線</span><span>SKY182 (08:10~09:20)</span></div>
+        <div class="flex justify-between"><span class="font-bold">回程</span><span>IT753 (16:00~19:10)</span></div>
+      </div>
+      
+      <h2 class="text-xl font-bold text-primary mb-4">🚗 租車資訊 (Toyota Rent-a-Car)</h2>
+      <div class="card border-l-4 border-secondary mb-4">
+        <h3 class="font-bold text-lg mb-1">第一段：茨城 ➔ 水戶</h3>
+        <p class="text-sm text-gray-600 mb-1">予約番号：98176045100</p>
+        <p class="text-xs text-gray-500 mb-1">期間：6/28 08:00 ~ 6/30 15:00</p>
+        <p class="text-xs text-gray-500 mb-1">總額：¥62,700 (W1 class x 2台)</p>
+        <p class="text-xs text-gray-500 mt-2">📍 <b>取車：</b>茨城空港店 (TEL:0299-37-2131)<br>📍 <b>還車：</b>水戸駅南口店</p>
+      </div>
+      
+      <div class="card border-l-4 border-secondary mb-4">
+        <h3 class="font-bold text-lg mb-1">第二段：郡山 ➔ 福島</h3>
+        <p class="text-sm text-gray-600 mb-1">予約番号：98176046300</p>
+        <p class="text-xs text-gray-500 mb-1">期間：7/1 08:00 ~ 7/3 14:00</p>
+        <p class="text-xs text-gray-500 mb-1">總額：¥69,300 (W1 class x 2台)</p>
+        <p class="text-xs text-gray-500 mt-2">📍 <b>取車：</b>郡山駅新幹線口店 (TEL:024-939-0100)<br>📍 <b>還車：</b>福島空港店</p>
+      </div>
+    </section>
+
+    <!-- ==================== 分頁四：餐廳 ==================== -->
+    <section id="tab-food" class="tab-content hidden-section">
+      <h2 class="text-xl font-bold text-primary mb-4">🍱 餐廳總覽</h2>
+      <div class="space-y-3">
+        
+        <div class="card">
+          <span class="text-xs bg-gray-200 px-2 py-1 rounded float-right">6/28 午</span>
+          <h3 class="font-bold">iijima常陸牛本舗</h3>
+          <p class="text-xs text-gray-500 mt-1 mb-2">茨城県ひたちなか市新光町35</p>
+          <a href="https://www.google.com/maps/search/?api=1&query=iijima常陸牛本舗" target="_blank" class="map-btn">📍 Google Map</a>
+        </div>
+        
+        <div class="card">
+          <span class="text-xs bg-gray-200 px-2 py-1 rounded float-right">6/29 午</span>
+          <h3 class="font-bold">那珂湊魚市場</h3>
+          <a href="https://www.google.com/maps/search/?api=1&query=那珂湊おさかな市場" target="_blank" class="map-btn mt-2">📍 Google Map</a>
+        </div>
+        
+        <div class="card">
+          <span class="text-xs bg-gray-200 px-2 py-1 rounded float-right">6/29 晚</span>
+          <h3 class="font-bold">つけめん TETSU</h3>
+          <p class="text-xs text-gray-500 mt-1 mb-2">水戶駅ビル エクセルみなみ 4F</p>
+          <a href="https://www.google.com/maps/search/?api=1&query=つけめんTETSU+壱の木戸水戸店" target="_blank" class="map-btn">📍 Google Map</a>
+        </div>
+        
+        <div class="card">
+          <span class="text-xs bg-gray-200 px-2 py-1 rounded float-right">6/30 午</span>
+          <h3 class="font-bold">彌滿喜 (Yamaki) 奧久慈鬥雞</h3>
+          <a href="https://www.google.com/maps/search/?api=1&query=弥満喜" target="_blank" class="map-btn mt-2">📍 Google Map</a>
+        </div>
+        
+        <div class="card">
+          <span class="text-xs bg-gray-200 px-2 py-1 rounded float-right">6/30 晚</span>
+          <h3 class="font-bold">まぜそば専門店 凜々亭</h3>
+          <a href="https://www.google.com/maps/search/?api=1&query=まぜそば専門店+凜々亭+郡山本店" target="_blank" class="map-btn mt-2">📍 Google Map</a>
+        </div>
+        
+        <div class="card">
+          <span class="text-xs bg-gray-200 px-2 py-1 rounded float-right">7/1 午</span>
+          <h3 class="font-bold">Murai醬汁豬排 / 河京拉麵館</h3>
+          <div class="mt-2 flex gap-2">
+            <a href="https://www.google.com/maps/search/?api=1&query=むらい+会津若松" target="_blank" class="map-btn">📍 豬排</a>
+            <a href="https://www.google.com/maps/search/?api=1&query=河京ラーメン館" target="_blank" class="map-btn">📍 拉麵</a>
+          </div>
+        </div>
+        
+        <div class="card">
+          <span class="text-xs bg-gray-200 px-2 py-1 rounded float-right">7/2 午</span>
+          <h3 class="font-bold">Hetsuri Garden (塔崖)</h3>
+          <a href="https://www.google.com/maps/search/?api=1&query=へつりガーデン" target="_blank" class="map-btn mt-2">📍 Google Map</a>
+        </div>
+        
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // 自動上色系統
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll('.auto-tag').forEach(tag => {
+        const text = tag.innerText;
+        let color = "bg-gray-100 text-gray-600";
+        if (['交通', '航班', '租車'].includes(text)) color = "bg-blue-100 text-blue-800";
+        else if (['午餐', '晚餐', '早餐', '吃'].includes(text)) color = "bg-pink-100 text-pink-800";
+        else if (['景點'].includes(text)) color = "bg-green-100 text-green-800";
+        else if (['住宿'].includes(text)) color = "bg-red-100 text-red-800";
+        tag.className = `auto-tag text-xs px-2 py-0.5 rounded-full ml-2 align-middle font-medium ${color}`;
+      });
+
+      // 自動跳轉到當天行程邏輯
+      const now = new Date();
+      const y = now.getFullYear();
+      const m = now.getMonth() + 1; // 1-12
+      const d = now.getDate();
+      
+      let initialDayId = 'day-1'; // 預設 6/27 以前以及 7/3 以後都是 Day 1
+      
+      if (y === 2026) {
+        if (m === 6 && d === 28) initialDayId = 'day-2';
+        else if (m === 6 && d === 29) initialDayId = 'day-3';
+        else if (m === 6 && d === 30) initialDayId = 'day-4';
+        else if (m === 7 && d === 1) initialDayId = 'day-5';
+        else if (m === 7 && d === 2) initialDayId = 'day-6';
+        else if (m === 7 && d === 3) initialDayId = 'day-7';
+      }
+      
+      switchDay(initialDayId);
+    });
+
+    // 分頁切換
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden-section'));
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+      document.getElementById(tabId).classList.remove('hidden-section');
+      
+      const btn = document.querySelector(`button[onclick="switchTab('${tabId}')"]`);
+      if(btn) btn.classList.add('active');
+      window.scrollTo(0, 0);
+    }
+
+    // 天數切換
+    function switchDay(dayId) {
+      document.querySelectorAll('.day-content').forEach(el => el.classList.add('hidden-section'));
+      document.querySelectorAll('.day-pill').forEach(el => el.classList.remove('active'));
+      document.getElementById(dayId).classList.remove('hidden-section');
+      
+      const btn = document.querySelector(`button[onclick="switchDay('${dayId}')"]`);
+      if(btn) btn.classList.add('active');
+    }
+  </script>
+</body>
+</html>
